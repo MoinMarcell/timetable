@@ -5,6 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import PersonIcon from '@mui/icons-material/Person';
+import {useNavigate} from "react-router-dom";
 
 type TopBarDrawerProps = {
     open: boolean,
@@ -12,6 +13,13 @@ type TopBarDrawerProps = {
 }
 
 export default function TopBarDrawer(props: TopBarDrawerProps) {
+
+    const navigate = useNavigate();
+
+    function handleTeacherClick() {
+        navigate("/teachers");
+    }
+
     return (
         <Paper sx={{width: 320, maxWidth: '100%'}}>
             <Drawer
@@ -19,7 +27,7 @@ export default function TopBarDrawer(props: TopBarDrawerProps) {
                 onClose={props.onClose}
             >
                 <MenuList>
-                    <MenuItem>
+                    <MenuItem onClick={handleTeacherClick}>
                         <ListItemIcon>
                             <PersonIcon fontSize="small"/>
                         </ListItemIcon>

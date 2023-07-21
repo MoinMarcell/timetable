@@ -25,7 +25,7 @@ export default function useTeachers() {
 
     function addTeacher(teacher: TeacherRequest) {
         setLoading(true);
-        axios.post(BASE_URL, teacher)
+        return axios.post(BASE_URL, teacher)
             .then((r) => {
                 fetchTeachers();
                 setStatusCode(r.status);
@@ -53,7 +53,7 @@ export default function useTeachers() {
 
     function deleteTeacher(id: string) {
         setLoading(true);
-        axios.delete(BASE_URL + '/' + id)
+        return axios.delete(BASE_URL + '/' + id)
             .then((r) => {
                 fetchTeachers();
                 setStatusCode(r.status);
