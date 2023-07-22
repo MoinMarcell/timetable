@@ -18,6 +18,7 @@ export default function TopBarDrawer(props: TopBarDrawerProps) {
 
     function handleTeacherClick() {
         navigate("/teachers");
+        props.onClose();
     }
 
     return (
@@ -31,7 +32,7 @@ export default function TopBarDrawer(props: TopBarDrawerProps) {
                         <ListItemIcon>
                             <PersonIcon fontSize="small"/>
                         </ListItemIcon>
-                        <ListItemText>Lehrer</ListItemText>
+                        <ListItemText>Dozenten</ListItemText>
                     </MenuItem>
                 </MenuList>
             </Drawer>

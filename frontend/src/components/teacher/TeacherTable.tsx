@@ -2,16 +2,19 @@ import {Teacher} from "../../models/Teacher.ts";
 import TeacherRow from "./TeacherRow.tsx";
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 import Paper from "@mui/material/Paper";
+import {TeacherRequest} from "../../models/TeacherRequest.ts";
 
 type TeacherTableProps = {
     teachers: Teacher[];
     deleteTeacher: (id: string) => Promise<void>;
+    updateTeacher: (id: string, teacher: TeacherRequest) => Promise<void>;
 }
 
 export default function TeacherTable(props: TeacherTableProps) {
 
     const teachers: Teacher[] = props.teachers;
-    const teacherRows = teachers.map((teacher) => <TeacherRow key={teacher.id} deleteTeacher={props.deleteTeacher}
+    const teacherRows = teachers.map((teacher) => <TeacherRow key={teacher.id} updateTeacher={props.updateTeacher}
+                                                              deleteTeacher={props.deleteTeacher}
                                                               teacher={teacher}/>)
 
     return (
