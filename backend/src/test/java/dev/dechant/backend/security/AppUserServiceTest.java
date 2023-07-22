@@ -1,7 +1,6 @@
 package dev.dechant.backend.security;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +24,7 @@ class AppUserServiceTest {
 
         //When
         when(appUserRepository.findByUsername(username)).thenReturn(java.util.Optional.of(expected));
-        UserDetails actual = appUserService.loadUserByUsername(username);
+        AppUser actual = (AppUser) appUserService.loadUserByUsername(username);
 
         //Then
         assertNotNull(actual);
