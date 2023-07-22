@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -33,6 +34,7 @@ class TeacherControllerTest {
 
     @Test
     @DirtiesContext
+    @WithMockUser
     void getAllTeachers_whenNoTeachersInDatabase_expectStatus200AndEmptyList() throws Exception {
         mockMvc.perform(get(API_URL))
                 .andExpect(status().isOk())
@@ -41,6 +43,7 @@ class TeacherControllerTest {
 
     @Test
     @DirtiesContext
+    @WithMockUser
     void getAllTeachers_whenTeachersInDatabase_expectStatus200AndListOfTeachers() throws Exception {
         List<TeacherRequest> teachersToAdd = List.of(
                 new TeacherRequest("Max", "Muster", "Herr"),
@@ -66,6 +69,7 @@ class TeacherControllerTest {
 
     @Test
     @DirtiesContext
+    @WithMockUser
     void getTeacherById_whenTeacherExist_expectStatus200AndReturnTeacher() throws Exception {
         TeacherRequest teacherToAdd = new TeacherRequest("Max", "Muster", "Herr");
         String teacherToAddAsJson = objectMapper.writeValueAsString(teacherToAdd);
@@ -87,6 +91,7 @@ class TeacherControllerTest {
 
     @Test
     @DirtiesContext
+    @WithMockUser
     void getTeacherById_whenTeacherNotExist_expectStatus404() throws Exception {
         String id = "1";
 
@@ -96,6 +101,7 @@ class TeacherControllerTest {
 
     @Test
     @DirtiesContext
+    @WithMockUser
     void createTeacher_whenRequestBodyIsCorrect_expectStatus201AndCreatedTeacher() throws Exception {
         TeacherRequest teacherToAdd = new TeacherRequest("Max", "Muster", "Herr");
         String teacherToAddAsJson = objectMapper.writeValueAsString(teacherToAdd);
@@ -118,6 +124,7 @@ class TeacherControllerTest {
 
     @Test
     @DirtiesContext
+    @WithMockUser
     void updateTeacher_whenTeacherExistAndRequestBodyIsCorrect_expectStatus200AndUpdatedTeacher() throws Exception {
         TeacherRequest teacherToAdd = new TeacherRequest("Max", "Muster", "Herr");
         String teacherToAddAsJson = objectMapper.writeValueAsString(teacherToAdd);
@@ -153,6 +160,7 @@ class TeacherControllerTest {
 
     @Test
     @DirtiesContext
+    @WithMockUser
     void deleteTeacher_whenTeacherExist_expectStatus204() throws Exception {
         TeacherRequest teacherToAdd = new TeacherRequest("Max", "Muster", "Herr");
         String teacherToAddAsJson = objectMapper.writeValueAsString(teacherToAdd);
@@ -174,6 +182,7 @@ class TeacherControllerTest {
 
     @Test
     @DirtiesContext
+    @WithMockUser
     void createTeachers_whenApiCalledAndRequestBodyIsCorrect_expectStatus201AndReturnListOfCreatedTeachers() throws Exception {
         List<TeacherRequest> teachersToAdd = List.of(
                 new TeacherRequest("Max", "Muster", "Herr"),
