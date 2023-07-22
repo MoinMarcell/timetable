@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {Teacher} from "../models/Teacher.ts";
 import axios from "axios";
 import {TeacherRequest} from "../models/TeacherRequest.ts";
+import {toast} from "react-toastify";
 
 export default function useTeachers() {
 
@@ -10,57 +11,83 @@ export default function useTeachers() {
     const [loading, setLoading] = useState<boolean>(false);
     const [teachers, setTeachers] = useState<Teacher[]>([]);
     const [error, setError] = useState<string>();
-    const [statusCode, setStatusCode] = useState<number>();
 
     function fetchTeachers() {
         setLoading(true);
         axios.get(BASE_URL)
             .then(r => setTeachers(r.data))
-            .catch((e) => {
+            .catch(() => {
                 setError("Error fetching teachers");
-                setStatusCode(e.response.status)
             })
             .finally(() => setLoading(false));
     }
 
     function addTeacher(teacher: TeacherRequest) {
         setLoading(true);
-        return axios.post(BASE_URL, teacher)
-            .then((r) => {
-                fetchTeachers();
-                setStatusCode(r.status);
+        return axios.get("/api/v1/auth/csrf")
+            .then(r => {
+                axios.post(BASE_URL, teacher, {
+                    headers: {
+                        "X-CSRF-Token": r.data.token,
+                    }
+                })
+                    .then(() => {
+                        fetchTeachers();
+                    })
+                    .catch(() => {
+                        setError("Error adding teacher");
+                    })
+
             })
-            .catch((e) => {
-                setError("Error adding teacher");
-                setStatusCode(e.response.status)
+            .catch(() => {
+                setError("Error fetching CSRF token");
+                toast.error("Error fetching CSRF token");
             })
             .finally(() => setLoading(false));
     }
 
     function updateTeacher(id: string, teacher: TeacherRequest) {
         setLoading(true);
-        return axios.put(BASE_URL + '/' + id, teacher)
-            .then((r) => {
-                fetchTeachers();
-                setStatusCode(r.status);
+        return axios.get("/api/v1/auth/csrf")
+            .then(r => {
+                axios.put(BASE_URL + '/' + id, teacher, {
+                    headers: {
+                        "X-CSRF-Token": r.data.token,
+                    }
+                })
+                    .then(() => {
+                        fetchTeachers();
+                    })
+                    .catch(() => {
+                        setError("Error updating teacher");
+                    })
             })
-            .catch((e) => {
-                setError("Error updating teacher");
-                setStatusCode(e.response.status)
+            .catch(() => {
+                setError("Error fetching CSRF token");
+                toast.error("Error fetching CSRF token");
             })
             .finally(() => setLoading(false));
     }
 
     function deleteTeacher(id: string) {
         setLoading(true);
-        return axios.delete(BASE_URL + '/' + id)
-            .then((r) => {
-                fetchTeachers();
-                setStatusCode(r.status);
+        return axios.get("/api/v1/auth/csrf")
+            .then(r => {
+                axios.delete(BASE_URL + '/' + id, {
+                    headers: {
+                        "X-CSRF-Token": r.data.token,
+                    }
+                })
+                    .then(() => {
+                        fetchTeachers();
+                    })
+                    .catch(() => {
+                        setError("Error deleting teacher");
+                    });
             })
-            .catch((e) => {
-                setError("Error deleting teacher");
-                setStatusCode(e.response.status)
+            .catch(() => {
+                setError("Error fetching CSRF token");
+                toast.error("Error fetching CSRF token");
             })
             .finally(() => setLoading(false));
     }
@@ -69,6 +96,6 @@ export default function useTeachers() {
         fetchTeachers();
     }, []);
 
-    return {loading, teachers, error, statusCode, addTeacher, updateTeacher, deleteTeacher};
+    return {loading, teachers, error, addTeacher, updateTeacher, deleteTeacher};
 
 }

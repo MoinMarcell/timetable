@@ -28,14 +28,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public String login() {
-        return "logged in";
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
     @PostMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
         SecurityContextHolder.clearContext();
-        return "logged out";
+        return "anonymous";
     }
 
 }

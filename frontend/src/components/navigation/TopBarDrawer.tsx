@@ -1,6 +1,6 @@
 import Drawer from '@mui/material/Drawer';
 import Paper from '@mui/material/Paper';
-import MenuList from '@mui/material/MenuList';
+import HomeIcon from '@mui/icons-material/Home';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -21,20 +21,29 @@ export default function TopBarDrawer(props: TopBarDrawerProps) {
         props.onClose();
     }
 
+    function handleHomeClick() {
+        navigate("/");
+        props.onClose();
+    }
+
     return (
         <Paper sx={{width: 320, maxWidth: '100%'}}>
             <Drawer
                 open={props.open}
                 onClose={props.onClose}
             >
-                <MenuList>
-                    <MenuItem onClick={handleTeacherClick}>
-                        <ListItemIcon>
-                            <PersonIcon fontSize="small"/>
-                        </ListItemIcon>
-                        <ListItemText>Dozenten</ListItemText>
-                    </MenuItem>
-                </MenuList>
+                <MenuItem onClick={handleHomeClick}>
+                    <ListItemIcon>
+                        <HomeIcon fontSize="small"/>
+                    </ListItemIcon>
+                    <ListItemText>Startseite</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleTeacherClick}>
+                    <ListItemIcon>
+                        <PersonIcon fontSize="small"/>
+                    </ListItemIcon>
+                    <ListItemText>Dozenten</ListItemText>
+                </MenuItem>
             </Drawer>
         </Paper>
     );

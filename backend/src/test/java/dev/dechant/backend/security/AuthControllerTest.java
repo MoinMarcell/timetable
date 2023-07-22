@@ -68,11 +68,11 @@ class AuthControllerTest {
 
     @Test
     @DirtiesContext
-    @WithMockUser
+    @WithMockUser()
     void testLogin_whenCredentialsCorrect_expectStatus200AndBodyOfLoggedIn() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/login").with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().string("logged in"));
+                .andExpect(content().string("user"));
     }
 
     @Test
@@ -81,7 +81,7 @@ class AuthControllerTest {
     void testLogout_whenLoggedIn_expectStatus200AndBodyOfLoggedOut() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/logout").with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().string("logged out"));
+                .andExpect(content().string("anonymous"));
     }
 
     @Test
