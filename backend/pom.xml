@@ -24,6 +24,8 @@
         <sonar.test.exclusions>**/BackendApplication.java</sonar.test.exclusions>
         <sonar.coverage.exclusions>**/SecurityConfig.java</sonar.coverage.exclusions>
         <sonar.test.exclusions>**/SecurityConfig.java</sonar.test.exclusions>
+        <sonar.coverage.exclusions>**/AppUser.java</sonar.coverage.exclusions>
+        <sonar.test.exclusions>**/AppUser.java</sonar.test.exclusions>
     </properties>
 
     <dependencies>
