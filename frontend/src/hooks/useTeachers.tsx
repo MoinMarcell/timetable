@@ -39,7 +39,7 @@ export default function useTeachers() {
 
     function updateTeacher(id: string, teacher: TeacherRequest) {
         setLoading(true);
-        axios.put(BASE_URL + '/' + id, teacher)
+        return axios.put(BASE_URL + '/' + id, teacher)
             .then((r) => {
                 fetchTeachers();
                 setStatusCode(r.status);

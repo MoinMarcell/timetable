@@ -6,7 +6,7 @@ import useTeachers from "./hooks/useTeachers.tsx";
 
 export default function App() {
 
-    const {teachers, addTeacher, deleteTeacher} = useTeachers();
+    const {teachers, addTeacher, deleteTeacher, updateTeacher} = useTeachers();
 
     return (
         <Box sx={{
@@ -15,7 +15,8 @@ export default function App() {
         }}>
             <TopBar/>
             <Routes>
-                <Route path={"/teachers"} element={<TeacherApp teachers={teachers} deleteTeacher={deleteTeacher}
+                <Route path={"/teachers"} element={<TeacherApp teachers={teachers} updateTeacher={updateTeacher}
+                                                               deleteTeacher={deleteTeacher}
                                                                addTeacher={addTeacher}/>}/>
             </Routes>
         </Box>

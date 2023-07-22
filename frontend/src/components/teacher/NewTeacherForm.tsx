@@ -11,9 +11,10 @@ import Swal from "sweetalert2";
 
 type AddTeacherProps = {
     addTeacher: (teacher: TeacherRequest) => Promise<void>;
+    closeDialog: () => void;
 }
 
-export default function AddTeacher(props: AddTeacherProps) {
+export default function NewTeacherForm(props: AddTeacherProps) {
 
     const addTeacher = props.addTeacher;
     const [teacher, setTeacher] = useState<TeacherRequest>({firstName: "", lastName: "", salutation: ""});
@@ -29,6 +30,7 @@ export default function AddTeacher(props: AddTeacherProps) {
 
     function handleSubmitNewTeacher(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        props.closeDialog();
         Swal.fire({
             title: 'Hinzufügen...',
             text: 'Bitte warten...',
@@ -42,12 +44,13 @@ export default function AddTeacher(props: AddTeacherProps) {
                     }).then();
                 });
             }
-        });
+        }).then();
+        setTeacher({firstName: "", lastName: "", salutation: ""})
     }
 
     return (
         <Box sx={{minWidth: 120, mt: 2}} component={"form"} onSubmit={handleSubmitNewTeacher}>
-            <FormControl fullWidth>
+            <FormControl fullWidth sx={{gap: 2}}>
                 <InputLabel id="demo-simple-select-label">Anrede</InputLabel>
                 <Select
                     labelId="demo-simple-select-label"
@@ -60,9 +63,11 @@ export default function AddTeacher(props: AddTeacherProps) {
                     <MenuItem value={"Herr"}>Herr</MenuItem>
                     <MenuItem value={"Divers"}>Divers</MenuItem>
                 </Select>
-                <TextField id="outlined-basic" name="firstName" onChange={handleChangeName} label="Vorname"
+                <TextField id="outlined-basic" value={teacher.firstName} name="firstName" onChange={handleChangeName}
+                           label="Vorname"
                            variant="outlined"/>
-                <TextField id="outlined-basic" name="lastName" onChange={handleChangeName} label="Nachname"
+                <TextField id="outlined-basic" value={teacher.lastName} name="lastName" onChange={handleChangeName}
+                           label="Nachname"
                            variant="outlined"/>
                 <Button type={"submit"}>Hinzufügen</Button>
             </FormControl>
