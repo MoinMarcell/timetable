@@ -2,6 +2,7 @@ package dev.dechant.backend.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,8 +23,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(c -> c.anyRequest().permitAll())
+                .csrf(c -> {
+                    try {
+                        c.init(http);
+                    } catch (Exception e) {
+                        throw new SecurityException(e);
+                    }
+                })
+                .authorizeHttpRequests(c -> {
+                    c.requestMatchers(HttpMethod.GET, "/api/v1/auth/**").permitAll();
+                    c.anyRequest().authenticated();
+                })
                 .httpBasic(Customizer.withDefaults())
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(Customizer.withDefaults());
