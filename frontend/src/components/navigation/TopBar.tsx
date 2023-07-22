@@ -8,7 +8,12 @@ import MenuIcon from '@mui/icons-material/Menu';
 import TopBarDrawer from "./TopBarDrawer.tsx";
 import {useState} from "react";
 
-export default function TopBar() {
+type TopBarProps = {
+    logout: () => void,
+    isAuthenticated: boolean,
+}
+
+export default function TopBar(props: TopBarProps) {
 
     const [open, setOpen] = useState(false);
 
@@ -37,7 +42,10 @@ export default function TopBar() {
                     <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
                         Timetable
                     </Typography>
-                    <Button color="inherit">Login</Button>
+                    {
+                        props.isAuthenticated && <Button color="inherit" onClick={props.logout}>Logout</Button>
+                    }
+
                 </Toolbar>
             </AppBar>
             <TopBarDrawer open={open} onClose={closeTopBarDrawer}/>

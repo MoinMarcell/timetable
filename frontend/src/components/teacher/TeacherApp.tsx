@@ -1,22 +1,15 @@
-import {Teacher} from "../../models/Teacher.ts";
 import TeacherTable from "./TeacherTable.tsx";
-import {TeacherRequest} from "../../models/TeacherRequest.ts";
 import NewTeacherDialog from "./NewTeacherDialog.tsx";
 import {useState} from "react";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import {Container} from "@mui/material";
+import useTeachers from "../../hooks/useTeachers.tsx";
 
-type TeacherAppProps = {
-    teachers: Teacher[];
-    addTeacher: (teacher: TeacherRequest) => Promise<void>;
-    deleteTeacher: (id: string) => Promise<void>;
-    updateTeacher: (id: string, teacher: TeacherRequest) => Promise<void>;
-}
 
-export default function TeacherApp(props: TeacherAppProps) {
+export default function TeacherApp() {
 
-    const teachers: Teacher[] = props.teachers;
+    const {teachers, addTeacher, deleteTeacher, updateTeacher} = useTeachers();
     const [open, setOpen] = useState<boolean>(false);
 
     function handleOpen() {
@@ -31,9 +24,9 @@ export default function TeacherApp(props: TeacherAppProps) {
         <Box sx={{mt: 2}}>
             <Container>
                 <Button sx={{mb: 2}} onClick={handleOpen} variant={"outlined"}>Neuer Dozent</Button>
-                <TeacherTable teachers={teachers} updateTeacher={props.updateTeacher}
-                              deleteTeacher={props.deleteTeacher}/>
-                <NewTeacherDialog open={open} onClose={handleClose} addTeacher={props.addTeacher}/>
+                <TeacherTable teachers={teachers} updateTeacher={updateTeacher}
+                              deleteTeacher={deleteTeacher}/>
+                <NewTeacherDialog open={open} onClose={handleClose} addTeacher={addTeacher}/>
             </Container>
         </Box>
     )

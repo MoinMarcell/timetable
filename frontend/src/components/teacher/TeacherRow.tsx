@@ -44,6 +44,13 @@ export default function TeacherRow(props: TeacherCardProps) {
                                     text: teacher.firstName + ' ' + teacher.lastName + ' wurde gelöscht.',
                                     icon: 'success',
                                 }).then()
+                            })
+                            .catch(() => {
+                                Swal.fire({
+                                    title: 'Fehler!',
+                                    text: 'Es ist ein Fehler aufgetreten.',
+                                    icon: 'error',
+                                }).then()
                             });
                     }
                 }).then();
