@@ -5,10 +5,13 @@ import TeacherApp from "./components/teacher/TeacherApp.tsx";
 import ProtectedRoutes from "./components/auth/ProtectedRoutes.tsx";
 import UseLogin from "./components/auth/useLogin.tsx";
 import LoginPage from "./components/auth/LoginPage.tsx";
+import LoadSpinner from "./components/loadSpinner/LoadSpinner.tsx";
 
 export default function App() {
 
-    const {login, logout, isAuthenticated, loading} = UseLogin();
+    const {login, logout, isAuthenticated, loginLoading} = UseLogin();
+
+    if (loginLoading) return (<LoadSpinner/>);
 
     return (
         <Box sx={{
@@ -17,7 +20,7 @@ export default function App() {
         }}>
             {isAuthenticated && <TopBar isAuthenticated={isAuthenticated} logout={logout}/>}
             <Routes>
-                <Route path={"/login"} element={<LoginPage loading={loading} login={login}/>}/>
+                <Route path={"/login"} element={<LoginPage loading={loginLoading} login={login}/>}/>
                 <Route element={<ProtectedRoutes isAuthenticated={isAuthenticated}/>}>
                     <Route path={"/"} element={<p>Home</p>}/>
                     <Route

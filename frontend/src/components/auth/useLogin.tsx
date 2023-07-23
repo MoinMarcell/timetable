@@ -7,7 +7,7 @@ import {useNavigate} from "react-router-dom";
 export default function UseLogin() {
 
     const [username, setUsername] = useState("anonymous");
-    const [loginLoading, setLoginLoading] = useState(false);
+    const [loginLoading, setLoginLoading] = useState(true);
 
     const navigate = useNavigate();
 
@@ -17,7 +17,6 @@ export default function UseLogin() {
         username !== "anonymous";
 
     function login(username: string, password: string) {
-        setLoginLoading(true)
         axios.get("/api/v1/auth/csrf")
             .then(r => {
                 axios.post("/api/v1/auth/login", {}, {
@@ -72,13 +71,17 @@ export default function UseLogin() {
             .catch(() => {
                 toast.error("Hoppla, da ist etwas schiefgelaufen");
             })
+            .finally(() => setLoginLoading(false));
     }
 
     useEffect(() => {
         axios.get("/api/v1/auth/me")
-            .then(r => setUsername(r.data))
-            .catch(() => setUsername("anonymous"));
+            .then(r => {
+                setUsername(r.data)
+            })
+            .catch(() => setUsername("anonymous"))
+            .finally(() => setLoginLoading(false));
     }, []);
 
-    return {username, login, logout, isAuthenticated, loading: loginLoading}
+    return {username, login, logout, isAuthenticated, loginLoading}
 }
