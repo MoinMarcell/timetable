@@ -2,11 +2,9 @@ package dev.dechant.backend.teacher;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/teachers")
@@ -71,17 +69,6 @@ public class TeacherController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTeacher(@PathVariable String id) {
         teacherRepository.deleteById(id);
-    }
-
-    @ExceptionHandler(TeacherNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleTeacherNotFoundException(TeacherNotFoundException exception) {
-        Map<String, String> body = Map.of(
-                "message", exception.getMessage(),
-                "timestamp", String.valueOf(System.currentTimeMillis()
-                )
-        );
-
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
 }
