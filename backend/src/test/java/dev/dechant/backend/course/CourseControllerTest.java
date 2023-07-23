@@ -331,6 +331,22 @@ class CourseControllerTest {
     @Test
     @DirtiesContext
     @WithMockUser
+    void updateCourse_whenLoggedInAndCourseNotExist_expectStatus404() throws Exception {
+        String id = "1";
+
+        CourseRequest updatedCourseRequest = new CourseRequest("Math", 22, null);
+        String updatedCourseRequestJson = objectMapper.writeValueAsString(updatedCourseRequest);
+
+        mockMvc.perform(put(BASE_URL + "/" + id)
+                        .with(csrf())
+                        .contentType("application/json")
+                        .content(updatedCourseRequestJson))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DirtiesContext
+    @WithMockUser
     void deleteCourse_whenLoggedInAndCourseExist_expectStatus204() throws Exception {
         CourseRequest courseRequest = new CourseRequest("Math", 20, null);
         String courseRequestJson = objectMapper.writeValueAsString(courseRequest);
