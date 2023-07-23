@@ -3,6 +3,7 @@ package dev.dechant.backend.course;
 import dev.dechant.backend.teacher.Teacher;
 import dev.dechant.backend.teacher.TeacherNotFoundException;
 import dev.dechant.backend.teacher.TeacherRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class CourseController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Course createCourse(@RequestBody CourseRequest course) {
+    public Course createCourse(@Valid @RequestBody CourseRequest course) {
 
         if (course.teacherId() == null) {
             return courseRepository.save(
@@ -52,14 +53,14 @@ public class CourseController {
                     Course.builder()
                             .name(course.name())
                             .amountOfStudents(course.amountOfStudents())
-                            .teacher(teacher.get())
+                            .teacherId(teacher.get().getId())
                             .build()
             );
         }
     }
 
     @PutMapping("/{id}")
-    public Course updateCourse(@PathVariable String id, @RequestBody CourseRequest course) {
+    public Course updateCourse(@PathVariable String id, @Valid @RequestBody CourseRequest course) {
 
         if (!courseRepository.existsById(id)) {
             throw new CourseNotFoundException(ERROR_MESSAGE);
@@ -71,7 +72,6 @@ public class CourseController {
                             .id(id)
                             .name(course.name())
                             .amountOfStudents(course.amountOfStudents())
-                            .teacher(null)
                             .build()
             );
         }
@@ -87,7 +87,7 @@ public class CourseController {
                         .id(id)
                         .name(course.name())
                         .amountOfStudents(course.amountOfStudents())
-                        .teacher(teacher.get())
+                        .teacherId(teacher.get().getId())
                         .build()
         );
     }
