@@ -51,10 +51,10 @@ export default function NewTeacherForm(props: AddTeacherProps) {
     return (
         <Box sx={{minWidth: 120, mt: 2}} component={"form"} onSubmit={handleSubmitNewTeacher}>
             <FormControl fullWidth sx={{gap: 2}}>
-                <InputLabel id="demo-simple-select-label">Anrede</InputLabel>
+                <InputLabel id="salutation-select-label">Anrede</InputLabel>
                 <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
+                    labelId="salutation-select-label"
+                    id="salutation-select"
                     value={teacher.salutation}
                     label="Anrede"
                     onChange={handleChangeSalutation}
@@ -63,10 +63,14 @@ export default function NewTeacherForm(props: AddTeacherProps) {
                     <MenuItem value={"Herr"}>Herr</MenuItem>
                     <MenuItem value={"Divers"}>Divers</MenuItem>
                 </Select>
-                <TextField id="outlined-basic" value={teacher.firstName} name="firstName" onChange={handleChangeName}
+                <TextField value={teacher.firstName}
+                           name="firstName"
+                           onChange={handleChangeName}
                            label="Vorname"
                            variant="outlined"/>
-                <TextField id="outlined-basic" value={teacher.lastName} name="lastName" onChange={handleChangeName}
+                <TextField value={teacher.lastName}
+                           name="lastName"
+                           onChange={handleChangeName}
                            label="Nachname"
                            variant="outlined"/>
                 <Button type={"submit"}>Hinzufügen</Button>

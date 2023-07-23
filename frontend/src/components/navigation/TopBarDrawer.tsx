@@ -26,6 +26,11 @@ export default function TopBarDrawer(props: TopBarDrawerProps) {
         props.onClose();
     }
 
+    function handleCourseClick() {
+        navigate("/courses");
+        props.onClose();
+    }
+
     return (
         <Paper sx={{width: 320, maxWidth: '100%'}}>
             <Drawer
@@ -43,6 +48,12 @@ export default function TopBarDrawer(props: TopBarDrawerProps) {
                         <PersonIcon fontSize="small"/>
                     </ListItemIcon>
                     <ListItemText>Dozenten</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleCourseClick}>
+                    <ListItemIcon>
+                        <PersonIcon fontSize="small"/>
+                    </ListItemIcon>
+                    <ListItemText>Kurse</ListItemText>
                 </MenuItem>
             </Drawer>
         </Paper>

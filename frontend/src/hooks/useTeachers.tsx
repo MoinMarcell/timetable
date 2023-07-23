@@ -22,6 +22,13 @@ export default function useTeachers() {
             .finally(() => setLoading(false));
     }
 
+    function getTeacherById(id: string): Teacher | undefined {
+        const teacherToFind = teachers.find(teacher => teacher.id === id);
+        if (teacherToFind) {
+            return teacherToFind;
+        }
+    }
+
     function addTeacher(teacher: TeacherRequest) {
         setLoading(true);
         return axios.get("/api/v1/auth/csrf")
@@ -96,6 +103,6 @@ export default function useTeachers() {
         fetchTeachers();
     }, []);
 
-    return {loading, teachers, error, addTeacher, updateTeacher, deleteTeacher};
+    return {loading, teachers, error, addTeacher, updateTeacher, deleteTeacher, getTeacherById};
 
 }

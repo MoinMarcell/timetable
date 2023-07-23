@@ -45,7 +45,20 @@ class CourseControllerTest {
     @WithMockUser
     void getAllCourses_whenLoggedInAndCoursesInDataBase_expectStatus200AndReturnListOfCourses() throws Exception {
 
-        CourseRequest courseRequest = new CourseRequest("Math", 20, null);
+        TeacherRequest teacherRequest = new TeacherRequest("Max", "Muster", "Herr");
+        String teacherRequestJson = objectMapper.writeValueAsString(teacherRequest);
+
+        MvcResult teacherPostResult = mockMvc.perform(post("/api/v1/teachers")
+                        .with(csrf())
+                        .contentType("application/json")
+                        .content(teacherRequestJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String teacherPostResultBody = teacherPostResult.getResponse().getContentAsString();
+        Teacher createdTeacher = objectMapper.readValue(teacherPostResultBody, Teacher.class);
+
+        CourseRequest courseRequest = new CourseRequest("Math", 20, createdTeacher.getId());
         String courseRequestJson = objectMapper.writeValueAsString(courseRequest);
 
         MvcResult mvcResult = mockMvc.perform(post(BASE_URL)
@@ -147,7 +160,7 @@ class CourseControllerTest {
 
         assertEquals(courseRequest.name(), createdCourse.getName());
         assertEquals(courseRequest.amountOfStudents(), createdCourse.getAmountOfStudents());
-        assertEquals(createdTeacher.getId(), createdCourse.getTeacher().getId());
+        assertEquals(createdTeacher.getId(), createdCourse.getTeacherId());
         assertNotNull(createdCourse.getId());
     }
 
@@ -184,7 +197,7 @@ class CourseControllerTest {
 
         assertEquals(courseRequest.name(), createdCourse.getName());
         assertEquals(courseRequest.amountOfStudents(), createdCourse.getAmountOfStudents());
-        assertNull(createdCourse.getTeacher());
+        assertNull(createdCourse.getTeacherId());
         assertNotNull(createdCourse.getId());
     }
 
@@ -246,7 +259,7 @@ class CourseControllerTest {
 
         assertEquals(updatedCourseRequest.name(), updatedCourse.getName());
         assertEquals(updatedCourseRequest.amountOfStudents(), updatedCourse.getAmountOfStudents());
-        assertEquals(createdTeacher.getId(), updatedCourse.getTeacher().getId());
+        assertEquals(createdTeacher.getId(), updatedCourse.getTeacherId());
         assertEquals(createdCourse.getId(), updatedCourse.getId());
     }
 
@@ -311,7 +324,7 @@ class CourseControllerTest {
 
         assertEquals(updatedCourseRequest.name(), updatedCourse.getName());
         assertEquals(updatedCourseRequest.amountOfStudents(), updatedCourse.getAmountOfStudents());
-        assertNull(updatedCourse.getTeacher());
+        assertNull(updatedCourse.getTeacherId());
         assertEquals(createdCourse.getId(), updatedCourse.getId());
     }
 
