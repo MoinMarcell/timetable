@@ -6,7 +6,7 @@ import useTeachers from "../../hooks/useTeachers.tsx";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
-import {TextField} from "@mui/material";
+import {CircularProgress, TextField} from "@mui/material";
 import Button from "@mui/material/Button";
 
 type NewCourseFormProps = {
@@ -30,6 +30,18 @@ export default function NewCourseForm(props: NewCourseFormProps) {
         props.closeDialog();
     }
 
+    let mapTeachers;
+    if (teachers.length > 0) {
+        mapTeachers = teachers.map((teacher) => <MenuItem key={teacher.id}
+                                                          value={teacher.id}>{teacher.firstName} {teacher.lastName}</MenuItem>);
+    }
+    if (teachers.length === 0) {
+        mapTeachers = <MenuItem selected value={undefined}>Keine Kursleitung</MenuItem>;
+    }
+    if (!teachers) {
+        mapTeachers = <MenuItem><CircularProgress/></MenuItem>;
+    }
+
     return (
         <Box sx={{minWidth: 120, mt: 2}} component={"form"} onSubmit={handleSubmitNewCourse}>
             <FormControl fullWidth sx={{gap: 2}}>
@@ -41,11 +53,7 @@ export default function NewCourseForm(props: NewCourseFormProps) {
                     label="Kursleitung"
                     onChange={(event) => setCourseRequest({...courseRequest, teacherId: event.target.value})}
                 >
-                    <MenuItem selected value={undefined}>Keine Kursleitung</MenuItem>
-                    {
-                        teachers.map((teacher) => <MenuItem key={teacher.id}
-                                                            value={teacher.id}>{teacher.firstName} {teacher.lastName}</MenuItem>)
-                    }
+                    {mapTeachers}
                 </Select>
                 <TextField
                     label="Kursname"
