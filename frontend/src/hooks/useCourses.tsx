@@ -1,5 +1,5 @@
 import {Course} from "../models/Course.ts";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
 import {CourseRequest} from "../models/CourseRequest.ts";
@@ -9,36 +9,52 @@ export default function useCourses() {
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
-    function fetchCourses() {
+    const BASE_URL_COURSES: string = '/api/v1/courses';
+    const BASE_URL_CSRF: string = '/api/v1/auth/csrf';
+
+    const errorHandling = (text: string) => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: text,
+            showConfirmButton: false,
+            showCancelButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+        }).then(() => Swal.close());
+    }
+
+    function fetchCsrfToken() {
+        return axios.get(BASE_URL_CSRF)
+            .then(r => r.data)
+            .catch(() => {
+                errorHandling("Fehler beim Laden des CSRF Tokens");
+            })
+            .finally(() => setLoading(false));
+    }
+
+    const fetchCourses = useCallback(() => {
         setLoading(true);
         Swal.fire({
             title: 'Kurse werden geladen...',
             didOpen: () => {
                 Swal.showLoading()
-                axios.get('/api/v1/courses')
+                axios.get(BASE_URL_COURSES)
                     .then(r => {
                         setCourses(r.data);
                         Swal.close();
                     })
                     .catch(() => {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Fehler beim Laden der Kurse',
-                            showConfirmButton: false,
-                            showCancelButton: false,
-                            timer: 2000,
-                            timerProgressBar: true,
-                        }).then(() => Swal.close());
+                        errorHandling("Fehler beim Laden der Kurse");
                     })
                     .finally(() => setLoading(false));
             }
         }).then();
-    }
+    }, []);
 
     useEffect(() => {
         fetchCourses();
-    }, []);
+    }, [fetchCourses]);
 
     function addCourse(course: CourseRequest) {
         setLoading(true);
@@ -46,11 +62,11 @@ export default function useCourses() {
             title: 'Kurs wird hinzugefügt...',
             didOpen: () => {
                 Swal.showLoading();
-                axios.get('/api/v1/auth/csrf')
+                fetchCsrfToken()
                     .then(r => {
-                        axios.post('/api/v1/courses', course, {
+                        axios.post(BASE_URL_COURSES, course, {
                             headers: {
-                                'X-CSRF-Token': r.data.token,
+                                "X-CSRF-TOKEN": r.token,
                             }
                         })
                             .then((r) => {
@@ -59,30 +75,10 @@ export default function useCourses() {
                                 toast.success("Kurs " + r.data.name + " erfolgreich hinzugefügt");
                             })
                             .catch(() => {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Oops...',
-                                    text: 'Fehler beim Hinzufügen des Kurses',
-                                    showConfirmButton: false,
-                                    showCancelButton: false,
-                                    timer: 2000,
-                                    timerProgressBar: true,
-                                }).then(() => Swal.close());
+                                errorHandling("Fehler beim Hinzufügen des Kurses")
                             })
                             .finally(() => setLoading(false));
-                    })
-                    .catch(() => {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Fehler beim Laden des CSRF Tokens',
-                            showConfirmButton: false,
-                            showCancelButton: false,
-                            timer: 2000,
-                            timerProgressBar: true,
-                        }).then(() => Swal.close());
-                    })
-                    .finally(() => setLoading(false));
+                    });
             }
         }).then()
     }
@@ -93,11 +89,11 @@ export default function useCourses() {
             title: 'Kurs wird aktualisiert...',
             didOpen: () => {
                 Swal.showLoading();
-                axios.get('/api/v1/auth/csrf')
+                fetchCsrfToken()
                     .then(r => {
-                        axios.put('/api/v1/courses/' + id, course, {
+                        axios.put(BASE_URL_COURSES + '/' + id, course, {
                             headers: {
-                                'X-CSRF-Token': r.data.token,
+                                'X-CSRF-Token': r.token,
                             }
                         })
                             .then(() => {
@@ -106,30 +102,10 @@ export default function useCourses() {
                                 toast.success("Kurs erfolgreich aktualisiert");
                             })
                             .catch(() => {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Oops...',
-                                    text: 'Fehler beim Aktualisieren des Kurses',
-                                    showConfirmButton: false,
-                                    showCancelButton: false,
-                                    timer: 2000,
-                                    timerProgressBar: true,
-                                }).then(() => Swal.close());
+                                errorHandling("Fehler beim Aktualisieren des Kurses")
                             })
                             .finally(() => setLoading(false));
-                    })
-                    .catch(() => {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Fehler beim Laden des CSRF Tokens',
-                            showConfirmButton: false,
-                            showCancelButton: false,
-                            timer: 2000,
-                            timerProgressBar: true,
-                        }).then(() => Swal.close());
-                    })
-                    .finally(() => setLoading(false));
+                    });
             }
         }).then()
     }
@@ -140,11 +116,11 @@ export default function useCourses() {
             title: 'Kurs wird gelöscht...',
             didOpen: () => {
                 Swal.showLoading();
-                axios.get('/api/v1/auth/csrf')
+                fetchCsrfToken()
                     .then(r => {
-                        axios.delete('/api/v1/courses/' + id, {
+                        axios.delete(BASE_URL_COURSES + '/' + id, {
                             headers: {
-                                'X-CSRF-Token': r.data.token,
+                                'X-CSRF-Token': r.token,
                             }
                         })
                             .then(() => {
@@ -153,30 +129,10 @@ export default function useCourses() {
                                 toast.success("Kurs erfolgreich gelöscht");
                             })
                             .catch(() => {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Oops...',
-                                    text: 'Fehler beim Löschen des Kurses',
-                                    showConfirmButton: false,
-                                    showCancelButton: false,
-                                    timer: 2000,
-                                    timerProgressBar: true,
-                                }).then(() => Swal.close());
+                                errorHandling("Fehler beim Löschen des Kurses")
                             })
                             .finally(() => setLoading(false));
-                    })
-                    .catch(() => {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Fehler beim Laden des CSRF Tokens',
-                            showConfirmButton: false,
-                            showCancelButton: false,
-                            timer: 2000,
-                            timerProgressBar: true,
-                        }).then(() => Swal.close());
-                    })
-                    .finally(() => setLoading(false));
+                    });
             }
         }).then();
     }
