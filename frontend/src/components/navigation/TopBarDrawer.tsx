@@ -5,6 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import PersonIcon from '@mui/icons-material/Person';
+import ClassIcon from '@mui/icons-material/Class';
 import {useNavigate} from "react-router-dom";
 
 type TopBarDrawerProps = {
@@ -51,7 +52,7 @@ export default function TopBarDrawer(props: TopBarDrawerProps) {
                 </MenuItem>
                 <MenuItem onClick={handleCourseClick}>
                     <ListItemIcon>
-                        <PersonIcon fontSize="small"/>
+                        <ClassIcon fontSize="small"/>
                     </ListItemIcon>
                     <ListItemText>Kurse</ListItemText>
                 </MenuItem>

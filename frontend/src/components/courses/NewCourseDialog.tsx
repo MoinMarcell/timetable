@@ -6,11 +6,13 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import NewCourseForm from "./NewCourseForm.tsx";
 import {CourseRequest} from "../../models/CourseRequest.ts";
+import {Teacher} from "../../models/Teacher.ts";
 
 type NewCourseDialogProps = {
     open: boolean,
     onClose: () => void,
-    addCourse: (course: CourseRequest) => void
+    addCourse: (course: CourseRequest) => void,
+    teachers: Teacher[],
 }
 
 export default function NewCourseDialog(props: NewCourseDialogProps) {
@@ -25,6 +27,7 @@ export default function NewCourseDialog(props: NewCourseDialogProps) {
                     Hier kannst du einen neuen Kurs hinzufügen.
                 </DialogContentText>
                 <NewCourseForm
+                    teachers={props.teachers}
                     addCourse={props.addCourse}
                     closeDialog={props.onClose}
                 />

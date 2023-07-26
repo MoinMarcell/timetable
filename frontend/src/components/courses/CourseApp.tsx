@@ -6,6 +6,7 @@ import NewCourseDialog from "./NewCourseDialog.tsx";
 import {useState} from "react";
 import Button from "@mui/material/Button";
 import SearchIcon from '@mui/icons-material/Search';
+import useTeachers from "../../hooks/useTeachers.tsx";
 
 const Search = styled('div')(({theme}) => ({
     position: 'relative',
@@ -51,15 +52,17 @@ const StyledInputBase = styled(InputBase)(({theme}) => ({
 export default function CourseApp() {
 
     const {courses, deleteCourse, addCourse, loading, updateCourse} = useCourses();
-    const [open, setOpen] = useState<boolean>(false);
+    const {teachers} = useTeachers();
+
+    const [openNewCourseDialog, setOpenNewCourseDialog] = useState<boolean>(false);
     const [searchTerm, setSearchTerm] = useState<string>("");
 
-    function handleOpen() {
-        setOpen(true);
+    function handleOpenNewCourseDialog() {
+        setOpenNewCourseDialog(true);
     }
 
-    function handleClose() {
-        setOpen(false);
+    function handleCloseNewCourseDialog() {
+        setOpenNewCourseDialog(false);
     }
 
     const filteredCourses = courses.filter(course => {
@@ -77,7 +80,7 @@ export default function CourseApp() {
                     alignItems: "center",
                     flexDirection: "row",
                 }}>
-                    <Button variant={"outlined"} onClick={handleOpen} sx={{mb: 2}}>Neuer Kurs</Button>
+                    <Button variant={"outlined"} onClick={handleOpenNewCourseDialog} sx={{mb: 2}}>Neuer Kurs</Button>
                     <Search>
                         <SearchIconWrapper>
                             <SearchIcon/>
@@ -92,14 +95,16 @@ export default function CourseApp() {
                 </Box>
                 <CourseTable
                     isLoading={loading}
+                    teachers={teachers}
                     updateCourse={updateCourse}
                     handleDeleteCourse={deleteCourse}
                     courses={filteredCourses}
                 />
             </Container>
             <NewCourseDialog
-                open={open}
-                onClose={handleClose}
+                open={openNewCourseDialog}
+                onClose={handleCloseNewCourseDialog}
+                teachers={teachers}
                 addCourse={addCourse}
             />
         </Box>

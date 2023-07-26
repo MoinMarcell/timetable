@@ -2,21 +2,20 @@ import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import {CourseRequest} from "../../models/CourseRequest.ts";
 import {FormEvent, useState} from "react";
-import useTeachers from "../../hooks/useTeachers.tsx";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
 import {CircularProgress, TextField} from "@mui/material";
 import Button from "@mui/material/Button";
+import {Teacher} from "../../models/Teacher.ts";
 
 type NewCourseFormProps = {
     addCourse: (course: CourseRequest) => void;
     closeDialog: () => void;
+    teachers: Teacher[];
 }
 
 export default function NewCourseForm(props: NewCourseFormProps) {
-
-    const {teachers} = useTeachers();
 
     const [courseRequest, setCourseRequest] = useState<CourseRequest>({
         name: "",
@@ -31,14 +30,14 @@ export default function NewCourseForm(props: NewCourseFormProps) {
     }
 
     let mapTeachers;
-    if (teachers.length > 0) {
-        mapTeachers = teachers.map((teacher) => <MenuItem key={teacher.id}
-                                                          value={teacher.id}>{teacher.firstName} {teacher.lastName}</MenuItem>);
+    if (props.teachers.length > 0) {
+        mapTeachers = props.teachers.map((teacher) => <MenuItem key={teacher.id}
+                                                                value={teacher.id}>{teacher.firstName} {teacher.lastName}</MenuItem>);
     }
-    if (teachers.length === 0) {
+    if (props.teachers.length === 0) {
         mapTeachers = <MenuItem selected value={undefined}>Keine Kursleitung</MenuItem>;
     }
-    if (!teachers) {
+    if (!props.teachers) {
         mapTeachers = <MenuItem><CircularProgress/></MenuItem>;
     }
 
