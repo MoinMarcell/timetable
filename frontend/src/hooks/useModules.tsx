@@ -18,10 +18,19 @@ export default function useModules() {
 
     function fetchModules() {
         setLoadingModules(true);
-        axios.get(BASE_URL_MODULES)
-            .then(response => setModules(response.data))
-            .catch(() => <ErrorHandling message={"Fehler beim Laden der Module"}/>)
-            .finally(() => setLoadingModules(false));
+        Swal.fire({
+            title: 'Modul werden geladen...',
+            didOpen: () => {
+                Swal.showLoading();
+                axios.get(BASE_URL_MODULES)
+                    .then(response => {
+                        Swal.close();
+                        setModules(response.data)
+                    })
+                    .catch(() => <ErrorHandling message={"Fehler beim Laden der Module"}/>)
+                    .finally(() => setLoadingModules(false));
+            }
+        }).then();
     }
 
     useEffect(() => {
