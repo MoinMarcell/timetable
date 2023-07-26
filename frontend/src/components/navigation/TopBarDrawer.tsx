@@ -6,6 +6,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import PersonIcon from '@mui/icons-material/Person';
 import ClassIcon from '@mui/icons-material/Class';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import {useNavigate} from "react-router-dom";
 
 type TopBarDrawerProps = {
@@ -17,18 +18,23 @@ export default function TopBarDrawer(props: TopBarDrawerProps) {
 
     const navigate = useNavigate();
 
-    function handleTeacherClick() {
-        navigate("/teachers");
-        props.onClose();
-    }
-
     function handleHomeClick() {
         navigate("/");
         props.onClose();
     }
 
+    function handleTeacherClick() {
+        navigate("/teachers");
+        props.onClose();
+    }
+
     function handleCourseClick() {
         navigate("/courses");
+        props.onClose();
+    }
+
+    function handleModuleClick() {
+        navigate("/modules");
         props.onClose();
     }
 
@@ -55,6 +61,12 @@ export default function TopBarDrawer(props: TopBarDrawerProps) {
                         <ClassIcon fontSize="small"/>
                     </ListItemIcon>
                     <ListItemText>Kurse</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleModuleClick}>
+                    <ListItemIcon>
+                        <ViewModuleIcon fontSize="small"/>
+                    </ListItemIcon>
+                    <ListItemText>Module</ListItemText>
                 </MenuItem>
             </Drawer>
         </Paper>
