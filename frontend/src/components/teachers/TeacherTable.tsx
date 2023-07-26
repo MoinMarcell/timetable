@@ -6,14 +6,16 @@ import {TeacherRequest} from "../../models/TeacherRequest.ts";
 
 type TeacherTableProps = {
     teachers: Teacher[];
-    deleteTeacher: (id: string) => Promise<void>;
-    updateTeacher: (id: string, teacher: TeacherRequest) => Promise<void>;
+    deleteTeacher: (id: string) => void;
+    updateTeacher: (id: string, teacher: TeacherRequest) => void;
+    loadingTeachers: boolean;
 }
 
 export default function TeacherTable(props: TeacherTableProps) {
 
     const teachers: Teacher[] = props.teachers;
-    const teacherRows = teachers.map((teacher) => <TeacherRow key={teacher.id} updateTeacher={props.updateTeacher}
+    const teacherRows = teachers.map((teacher) => <TeacherRow key={teacher.id} loadingTeachers={props.loadingTeachers}
+                                                              updateTeacher={props.updateTeacher}
                                                               deleteTeacher={props.deleteTeacher}
                                                               teacher={teacher}/>)
 

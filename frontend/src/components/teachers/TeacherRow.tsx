@@ -1,5 +1,5 @@
 import {Teacher} from "../../models/Teacher.ts";
-import {TableCell, TableRow, TextField} from "@mui/material";
+import {CircularProgress, TableCell, TableRow, TextField} from "@mui/material";
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Swal from 'sweetalert2'
 import {ChangeEvent, useState} from "react";
@@ -8,11 +8,13 @@ import Select, {SelectChangeEvent} from "@mui/material/Select";
 import {TeacherRequest} from "../../models/TeacherRequest.ts";
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import IconButton from "@mui/material/IconButton";
 
 type TeacherCardProps = {
     teacher: Teacher;
-    deleteTeacher: (id: string) => Promise<void>;
-    updateTeacher: (id: string, teacher: TeacherRequest) => Promise<void>;
+    deleteTeacher: (id: string) => void;
+    updateTeacher: (id: string, teacher: TeacherRequest) => void;
+    loadingTeachers: boolean;
 }
 
 export default function TeacherRow(props: TeacherCardProps) {
@@ -32,28 +34,7 @@ export default function TeacherRow(props: TeacherCardProps) {
             confirmButtonText: 'Ja, bitte löschen!',
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Löschen...',
-                    text: 'Bitte warten...',
-                    didOpen() {
-                        Swal.showLoading()
-                        props.deleteTeacher(teacher.id)
-                            .then(() => {
-                                Swal.fire({
-                                    title: 'Gelöscht!',
-                                    text: teacher.firstName + ' ' + teacher.lastName + ' wurde gelöscht.',
-                                    icon: 'success',
-                                }).then()
-                            })
-                            .catch(() => {
-                                Swal.fire({
-                                    title: 'Fehler!',
-                                    text: 'Es ist ein Fehler aufgetreten.',
-                                    icon: 'error',
-                                }).then()
-                            });
-                    }
-                }).then();
+                props.deleteTeacher(teacher.id);
             }
         })
     }
@@ -83,25 +64,11 @@ export default function TeacherRow(props: TeacherCardProps) {
             confirmButtonText: 'Ja, bitte speichern!',
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Speichern...',
-                    text: 'Bitte warten...',
-                    didOpen() {
-                        Swal.showLoading()
-                        props.updateTeacher(teacher.id, teacher)
-                            .then(() => {
-                                Swal.fire({
-                                    title: 'Gespeichert!',
-                                    text: teacher.firstName + ' ' + teacher.lastName + ' wurde gespeichert.',
-                                    icon: 'success',
-                                }).then()
-                            });
-                    }
-                }).then();
+                props.updateTeacher(teacher.id, teacher);
                 setEditMode(false);
             }
             setEditMode(false);
-        })
+        });
     }
 
     return (
@@ -146,10 +113,20 @@ export default function TeacherRow(props: TeacherCardProps) {
                 {
                     editMode ?
                         <>
-                            <CheckIcon onClick={handleUpdateTeacher} color={"success"}/>
-                            <CloseIcon onClick={() => setEditMode(false)} color={"error"}/>
+                            <IconButton onClick={handleUpdateTeacher}>
+                                <CheckIcon color={"success"}/>
+                            </IconButton>
+                            <IconButton onClick={() => setEditMode(false)}>
+                                <CloseIcon color={"error"}/>
+                            </IconButton>
                         </> :
-                        <DeleteForeverIcon onClick={handleDeleteTeacher} color={"error"}/>
+                        <IconButton onClick={handleDeleteTeacher}>
+                            {
+                                props.loadingTeachers ?
+                                    <CircularProgress color={"error"}/> :
+                                    <DeleteForeverIcon color={"error"}/>
+                            }
+                        </IconButton>
                 }
             </TableCell>
         </TableRow>
