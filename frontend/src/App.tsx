@@ -7,6 +7,7 @@ import UseLogin from "./auth/useLogin.tsx";
 import LoginPage from "./auth/LoginPage.tsx";
 import LoadSpinner from "./components/loadSpinner/LoadSpinner.tsx";
 import CourseApp from "./components/courses/CourseApp.tsx";
+import ModuleApp from "./components/modules/ModuleApp.tsx";
 
 export default function App() {
 
@@ -34,6 +35,12 @@ export default function App() {
                         path={"/courses"}
                         element={
                             <CourseApp/>
+                        }
+                    />
+                    <Route
+                        path={"/modules"}
+                        element={
+                            <ModuleApp/>
                         }
                     />
                 </Route>
