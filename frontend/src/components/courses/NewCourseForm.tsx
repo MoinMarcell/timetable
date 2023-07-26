@@ -2,12 +2,10 @@ import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import {CourseRequest} from "../../models/CourseRequest.ts";
 import {FormEvent, useState} from "react";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import InputLabel from "@mui/material/InputLabel";
-import {CircularProgress, TextField} from "@mui/material";
+import {TextField} from "@mui/material";
 import Button from "@mui/material/Button";
 import {Teacher} from "../../models/Teacher.ts";
+import AutocompleteTeacherSearch from "../teachers/AutocompleteTeacherSearch.tsx";
 
 type NewCourseFormProps = {
     addCourse: (course: CourseRequest) => void;
@@ -20,7 +18,7 @@ export default function NewCourseForm(props: NewCourseFormProps) {
     const [courseRequest, setCourseRequest] = useState<CourseRequest>({
         name: "",
         amountOfStudents: 0,
-        teacherId: undefined
+        teacherId: "",
     });
 
     function handleSubmitNewCourse(event: FormEvent<HTMLFormElement>) {
@@ -29,31 +27,13 @@ export default function NewCourseForm(props: NewCourseFormProps) {
         props.closeDialog();
     }
 
-    let mapTeachers;
-    if (props.teachers.length > 0) {
-        mapTeachers = props.teachers.map((teacher) => <MenuItem key={teacher.id}
-                                                                value={teacher.id}>{teacher.firstName} {teacher.lastName}</MenuItem>);
-    }
-    if (props.teachers.length === 0) {
-        mapTeachers = <MenuItem selected value={undefined}>Keine Kursleitung</MenuItem>;
-    }
-    if (!props.teachers) {
-        mapTeachers = <MenuItem><CircularProgress/></MenuItem>;
-    }
+    const [open, setOpen] = useState(false);
 
     return (
         <Box sx={{minWidth: 120, mt: 2}} component={"form"} onSubmit={handleSubmitNewCourse}>
             <FormControl fullWidth sx={{gap: 2}}>
-                <InputLabel id="teacher-select-label">Kursleitung</InputLabel>
-                <Select
-                    labelId="teacher-select-label"
-                    id="teacher-select"
-                    value={courseRequest.teacherId}
-                    label="Kursleitung"
-                    onChange={(event) => setCourseRequest({...courseRequest, teacherId: event.target.value})}
-                >
-                    {mapTeachers}
-                </Select>
+                <AutocompleteTeacherSearch teachers={props.teachers} setCourseRequest={setCourseRequest} open={open}
+                                           setOpen={setOpen} courseRequest={courseRequest}/>
                 <TextField
                     label="Kursname"
                     variant="outlined"
@@ -73,5 +53,6 @@ export default function NewCourseForm(props: NewCourseFormProps) {
                 <Button variant="contained" type={"submit"}>Hinzufügen</Button>
             </FormControl>
         </Box>
-    );
+    )
+        ;
 }

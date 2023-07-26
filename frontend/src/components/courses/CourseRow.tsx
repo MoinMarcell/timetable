@@ -7,9 +7,8 @@ import {useState} from "react";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import {CourseRequest} from "../../models/CourseRequest.ts";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 import {Teacher} from "../../models/Teacher.ts";
+import AutocompleteTeacherSearch from "../teachers/AutocompleteTeacherSearch.tsx";
 
 type CourseRowProps = {
     course: Course;
@@ -20,7 +19,7 @@ type CourseRowProps = {
 }
 
 export default function CourseRow(props: CourseRowProps) {
-
+    const [open, setOpen] = useState(false);
     const [editMode, setEditMode] = useState<boolean>(false);
     const [courseToEdit, setCourseToEdit] = useState<CourseRequest>({
         name: props.course.name,
@@ -65,18 +64,6 @@ export default function CourseRow(props: CourseRowProps) {
         });
     }
 
-    let teachers;
-    if (props.teachers.length > 0) {
-        teachers = props.teachers.map((teacher) => <MenuItem key={teacher.id}
-                                                             value={teacher.id}>{teacher.firstName} {teacher.lastName}</MenuItem>);
-    }
-    if (props.teachers.length === 0) {
-        teachers = <MenuItem selected value={undefined}>Keine Kursleitung</MenuItem>;
-    }
-    if (!props.teachers) {
-        teachers = <MenuItem><CircularProgress/></MenuItem>;
-    }
-
     return (
         <TableRow>
             <TableCell
@@ -86,6 +73,7 @@ export default function CourseRow(props: CourseRowProps) {
                 {
                     editMode ?
                         <TextField
+                            label={"Kursname"}
                             value={courseToEdit.name}
                             onChange={(event) => setCourseToEdit({...courseToEdit, name: event.target.value})}
                         /> :
@@ -117,18 +105,8 @@ export default function CourseRow(props: CourseRowProps) {
             >
                 {
                     editMode ?
-                        <Select
-                            labelId="teacher-select-label"
-                            id="teacher-select"
-                            value={courseToEdit.teacherId}
-                            label="Kursleitung"
-                            onChange={(event) => setCourseToEdit({
-                                ...courseToEdit,
-                                teacherId: event.target.value
-                            })}
-                        >
-                            {teachers}
-                        </Select> :
+                        <AutocompleteTeacherSearch courseRequest={courseToEdit} open={open} setOpen={setOpen}
+                                                   teachers={props.teachers} setCourseRequest={setCourseToEdit}/> :
                         teacher &&
                         teacher.salutation + " " + teacher.lastName
                 }
