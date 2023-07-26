@@ -3,22 +3,21 @@ import CourseRow from "./CourseRow.tsx";
 import Paper from "@mui/material/Paper";
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 import {CourseRequest} from "../../models/CourseRequest.ts";
-import useTeachers from "../../hooks/useTeachers.tsx";
+import {Teacher} from "../../models/Teacher.ts";
 
 type CourseTableProps = {
     courses: Course[];
     handleDeleteCourse: (id: string) => void;
     isLoading: boolean;
     updateCourse: (id: string, course: CourseRequest) => void;
+    teachers: Teacher[];
 }
 
 export default function CourseTable(props: CourseTableProps) {
 
-    const {teachers} = useTeachers();
-
     const courseRows = props.courses.map(course =>
         <CourseRow
-            teachers={teachers}
+            teachers={props.teachers}
             key={course.id}
             updateCourse={props.updateCourse}
             isLoading={props.isLoading}
