@@ -1,101 +1,115 @@
-import {useEffect, useState} from "react";
-import {Teacher} from "../models/Teacher.ts";
+import {useCallback, useEffect, useState} from "react";
+import Swal from "sweetalert2";
 import axios from "axios";
-import {TeacherRequest} from "../models/TeacherRequest.ts";
 import {toast} from "react-toastify";
+import {TeacherRequest} from "../models/TeacherRequest.ts";
+import useCsrfToken from "./useCsrfToken.tsx";
+import ErrorHandling from "../components/errorHandling/ErrorHandling.tsx";
+import {Teacher} from "../models/Teacher.ts";
 
 export default function useTeachers() {
 
-    const BASE_URL: string = '/api/v1/teachers';
+    const {csrfToken, loadingCsrfToken} = useCsrfToken();
 
-    const [loading, setLoading] = useState<boolean>(false);
     const [teachers, setTeachers] = useState<Teacher[]>([]);
-    const [error, setError] = useState<string>();
+    const [loading, setLoading] = useState<boolean>(false);
 
-    function fetchTeachers() {
+    const BASE_URL_TEACHERS: string = '/api/v1/teachers';
+
+
+    const fetchTeachers = useCallback(() => {
         setLoading(true);
-        axios.get(BASE_URL)
-            .then(r => setTeachers(r.data))
-            .catch(() => {
-                setError("Error fetching teachers");
-            })
-            .finally(() => setLoading(false));
-    }
+        Swal.fire({
+            title: 'Dozenten werden geladen...',
+            didOpen: () => {
+                Swal.showLoading()
+                axios.get(BASE_URL_TEACHERS)
+                    .then(r => {
+                        setTeachers(r.data);
+                        Swal.close();
+                    })
+                    .catch(() => <ErrorHandling message={"Fehler beim Laden der Dozenten"}/>)
+                    .finally(() => setLoading(false));
+            }
+        }).then();
+    }, []);
+
+    useEffect(() => {
+        fetchTeachers();
+    }, [fetchTeachers]);
 
     function addTeacher(teacher: TeacherRequest) {
         setLoading(true);
-        return axios.get("/api/v1/auth/csrf")
-            .then(r => {
-                axios.post(BASE_URL, teacher, {
-                    headers: {
-                        "X-CSRF-Token": r.data.token,
-                    }
-                })
-                    .then(() => {
-                        fetchTeachers();
+        Swal.fire({
+            title: 'Dozent wird hinzugefügt...',
+            didOpen: () => {
+                Swal.showLoading();
+                if (!loadingCsrfToken) {
+                    axios.post(BASE_URL_TEACHERS, teacher, {
+                        headers: {
+                            "X-CSRF-TOKEN": csrfToken,
+                        }
                     })
-                    .catch(() => {
-                        setError("Error adding teacher");
-                    })
-
-            })
-            .catch(() => {
-                setError("Error fetching CSRF token");
-                toast.error("Error fetching CSRF token");
-            })
-            .finally(() => setLoading(false));
+                        .then((r) => {
+                            Swal.close();
+                            fetchTeachers();
+                            toast.success("Dozent " + r.data.firstName + " " + r.data.lastName + " erfolgreich hinzugefügt");
+                        })
+                        .catch(() => <ErrorHandling message={"Fehler beim Hinzufügen des Dozenten"}/>)
+                        .finally(() => setLoading(false));
+                }
+            }
+        }).then()
+        console.log(csrfToken)
     }
 
     function updateTeacher(id: string, teacher: TeacherRequest) {
         setLoading(true);
-        return axios.get("/api/v1/auth/csrf")
-            .then(r => {
-                axios.put(BASE_URL + '/' + id, teacher, {
-                    headers: {
-                        "X-CSRF-Token": r.data.token,
-                    }
-                })
-                    .then(() => {
-                        fetchTeachers();
+        Swal.fire({
+            title: 'Dozent wird aktualisiert...',
+            didOpen: () => {
+                Swal.showLoading();
+                if (!loadingCsrfToken) {
+                    axios.put(BASE_URL_TEACHERS + '/' + id, teacher, {
+                        headers: {
+                            'X-CSRF-Token': csrfToken,
+                        }
                     })
-                    .catch(() => {
-                        setError("Error updating teacher");
-                    })
-            })
-            .catch(() => {
-                setError("Error fetching CSRF token");
-                toast.error("Error fetching CSRF token");
-            })
-            .finally(() => setLoading(false));
+                        .then(() => {
+                            Swal.close();
+                            fetchTeachers();
+                            toast.success("Dozent erfolgreich aktualisiert");
+                        })
+                        .catch(() => <ErrorHandling message={"Fehler beim Aktualisieren des Dozent"}/>)
+                        .finally(() => setLoading(false));
+                }
+            }
+        }).then()
     }
 
     function deleteTeacher(id: string) {
         setLoading(true);
-        return axios.get("/api/v1/auth/csrf")
-            .then(r => {
-                axios.delete(BASE_URL + '/' + id, {
-                    headers: {
-                        "X-CSRF-Token": r.data.token,
-                    }
-                })
-                    .then(() => {
-                        fetchTeachers();
+        Swal.fire({
+            title: 'Dozent wird gelöscht...',
+            didOpen: () => {
+                Swal.showLoading();
+                if (!loadingCsrfToken) {
+                    axios.delete(BASE_URL_TEACHERS + '/' + id, {
+                        headers: {
+                            'X-CSRF-Token': csrfToken,
+                        }
                     })
-                    .catch(() => {
-                        setError("Error deleting teacher");
-                    });
-            })
-            .catch(() => {
-                setError("Error fetching CSRF token");
-                toast.error("Error fetching CSRF token");
-            })
-            .finally(() => setLoading(false));
+                        .then(() => {
+                            Swal.close();
+                            fetchTeachers();
+                            toast.success("Dozent erfolgreich gelöscht");
+                        })
+                        .catch(() => <ErrorHandling message={"Fehler beim Löschen des Dozent"}/>)
+                        .finally(() => setLoading(false));
+                }
+            }
+        }).then();
     }
 
-    useEffect(() => {
-        fetchTeachers();
-    }, []);
-
-    return {loading, teachers, error, addTeacher, updateTeacher, deleteTeacher};
-
+    return {teachers, loading, addTeacher, updateTeacher, deleteTeacher};
 }
