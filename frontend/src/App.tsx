@@ -2,9 +2,9 @@ import TopBar from "./components/navigation/TopBar.tsx";
 import Box from "@mui/material/Box";
 import {Route, Routes} from "react-router-dom";
 import TeacherApp from "./components/teachers/TeacherApp.tsx";
-import ProtectedRoutes from "./components/auth/ProtectedRoutes.tsx";
-import UseLogin from "./components/auth/useLogin.tsx";
-import LoginPage from "./components/auth/LoginPage.tsx";
+import ProtectedRoutes from "./auth/ProtectedRoutes.tsx";
+import UseLogin from "./auth/useLogin.tsx";
+import LoginPage from "./auth/LoginPage.tsx";
 import LoadSpinner from "./components/loadSpinner/LoadSpinner.tsx";
 import CourseApp from "./components/courses/CourseApp.tsx";
 
