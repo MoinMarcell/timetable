@@ -10,7 +10,7 @@ import Button from "@mui/material/Button";
 import Swal from "sweetalert2";
 
 type AddTeacherProps = {
-    addTeacher: (teacher: TeacherRequest) => Promise<void>;
+    addTeacher: (teacher: TeacherRequest) => void;
     closeDialog: () => void;
 }
 
@@ -36,13 +36,7 @@ export default function NewTeacherForm(props: AddTeacherProps) {
             text: 'Bitte warten...',
             didOpen() {
                 Swal.showLoading()
-                addTeacher(teacher).then(() => {
-                    Swal.fire({
-                        title: 'Hinzugefügt!',
-                        text: teacher.firstName + ' ' + teacher.lastName + ' wurde hinzugefügt.',
-                        icon: 'success',
-                    }).then();
-                });
+                addTeacher(teacher);
             }
         }).then();
         setTeacher({firstName: "", lastName: "", salutation: ""})

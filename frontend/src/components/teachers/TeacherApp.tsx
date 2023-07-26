@@ -5,12 +5,13 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import {Container} from "@mui/material";
 import useTeachers from "../../hooks/useTeachers.tsx";
-
+import SearchBar from "../util/SearchBar.tsx";
 
 export default function TeacherApp() {
 
-    const {teachers, addTeacher, deleteTeacher, updateTeacher} = useTeachers();
+    const {teachers, addTeacher, deleteTeacher, updateTeacher, loading} = useTeachers();
     const [open, setOpen] = useState<boolean>(false);
+    const [searchTerm, setSearchTerm] = useState<string>("");
 
     function handleOpen() {
         setOpen(true);
@@ -20,12 +21,24 @@ export default function TeacherApp() {
         setOpen(false);
     }
 
+    const filteredTeachers = teachers.filter(teacher => {
+        return teacher.firstName.toLowerCase().includes(searchTerm.toLowerCase()) || teacher.lastName.toLowerCase().includes(searchTerm.toLowerCase());
+    }).reverse();
+
     return (
         <Box sx={{mt: 2}}>
             <Container>
-                <Button sx={{mb: 2}} onClick={handleOpen} variant={"outlined"}>Neuer Dozent</Button>
-                <TeacherTable teachers={teachers} updateTeacher={updateTeacher}
-                              deleteTeacher={deleteTeacher}/>
+                <Box sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexDirection: "row",
+                }}>
+                    <Button sx={{mb: 2}} onClick={handleOpen} variant={"outlined"}>Neuer Dozent</Button>
+                    <SearchBar handleSearchTerm={setSearchTerm} placeholder={"Suche nach Dozent..."}/>
+                </Box>
+                <TeacherTable teachers={filteredTeachers} updateTeacher={updateTeacher}
+                              deleteTeacher={deleteTeacher} loadingTeachers={loading}/>
                 <NewTeacherDialog open={open} onClose={handleClose} addTeacher={addTeacher}/>
             </Container>
         </Box>

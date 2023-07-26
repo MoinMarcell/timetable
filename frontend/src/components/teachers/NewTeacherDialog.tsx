@@ -10,7 +10,7 @@ import {TeacherRequest} from "../../models/TeacherRequest.ts";
 type NewTeacherDialogProps = {
     open: boolean,
     onClose: () => void,
-    addTeacher: (teacher: TeacherRequest) => Promise<void>,
+    addTeacher: (teacher: TeacherRequest) => void,
 }
 
 export default function NewTeacherDialog(props: NewTeacherDialogProps) {
