@@ -4,37 +4,20 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import {CourseRequest} from "../models/CourseRequest.ts";
 import {toast} from "react-toastify";
+import useCsrfToken from "./useCsrfToken.tsx";
+import ErrorHandling from "../components/errorHandling/ErrorHandling.tsx";
 
 export default function useCourses() {
+
+    const {csrfToken, loadingCsrfToken} = useCsrfToken();
+
     const [courses, setCourses] = useState<Course[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loadingCourses, setLoadingCourses] = useState<boolean>(false);
 
     const BASE_URL_COURSES: string = '/api/v1/courses';
-    const BASE_URL_CSRF: string = '/api/v1/auth/csrf';
-
-    const errorHandling = (text: string) => {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: text,
-            showConfirmButton: false,
-            showCancelButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-        }).then(() => Swal.close());
-    }
-
-    function fetchCsrfToken() {
-        return axios.get(BASE_URL_CSRF)
-            .then(r => r.data)
-            .catch(() => {
-                errorHandling("Fehler beim Laden des CSRF Tokens");
-            })
-            .finally(() => setLoading(false));
-    }
 
     const fetchCourses = useCallback(() => {
-        setLoading(true);
+        setLoadingCourses(true);
         Swal.fire({
             title: 'Kurse werden geladen...',
             didOpen: () => {
@@ -44,10 +27,8 @@ export default function useCourses() {
                         setCourses(r.data);
                         Swal.close();
                     })
-                    .catch(() => {
-                        errorHandling("Fehler beim Laden der Kurse");
-                    })
-                    .finally(() => setLoading(false));
+                    .catch(() => <ErrorHandling message={"Fehler beim Laden der Kurse"}/>)
+                    .finally(() => setLoadingCourses(false));
             }
         }).then();
     }, []);
@@ -57,85 +38,79 @@ export default function useCourses() {
     }, [fetchCourses]);
 
     function addCourse(course: CourseRequest) {
-        setLoading(true);
+        setLoadingCourses(true);
         Swal.fire({
             title: 'Kurs wird hinzugefügt...',
             didOpen: () => {
                 Swal.showLoading();
-                fetchCsrfToken()
-                    .then(r => {
-                        axios.post(BASE_URL_COURSES, course, {
-                            headers: {
-                                "X-CSRF-TOKEN": r.token,
-                            }
+                if (!loadingCsrfToken) {
+                    axios.post(BASE_URL_COURSES, course.teacherId ? course : {
+                        name: course.name,
+                        amountOfStudents: course.amountOfStudents
+                    }, {
+                        headers: {
+                            "X-CSRF-TOKEN": csrfToken,
+                        }
+                    })
+                        .then((r) => {
+                            Swal.close();
+                            fetchCourses();
+                            toast.success("Kurs " + r.data.name + " erfolgreich hinzugefügt");
                         })
-                            .then((r) => {
-                                Swal.close();
-                                fetchCourses();
-                                toast.success("Kurs " + r.data.name + " erfolgreich hinzugefügt");
-                            })
-                            .catch(() => {
-                                errorHandling("Fehler beim Hinzufügen des Kurses")
-                            })
-                            .finally(() => setLoading(false));
-                    });
+                        .catch(() => <ErrorHandling message={"Fehler beim Hinzufügen des Kurses"}/>)
+                        .finally(() => setLoadingCourses(false));
+                }
             }
         }).then()
     }
 
     function updateCourse(id: string, course: CourseRequest) {
-        setLoading(true);
+        setLoadingCourses(true);
         Swal.fire({
             title: 'Kurs wird aktualisiert...',
             didOpen: () => {
                 Swal.showLoading();
-                fetchCsrfToken()
-                    .then(r => {
-                        axios.put(BASE_URL_COURSES + '/' + id, course, {
-                            headers: {
-                                'X-CSRF-Token': r.token,
-                            }
+                if (!loadingCsrfToken) {
+                    axios.put(BASE_URL_COURSES + '/' + id, course, {
+                        headers: {
+                            'X-CSRF-Token': csrfToken,
+                        }
+                    })
+                        .then(() => {
+                            Swal.close();
+                            fetchCourses();
+                            toast.success("Kurs erfolgreich aktualisiert");
                         })
-                            .then(() => {
-                                Swal.close();
-                                fetchCourses();
-                                toast.success("Kurs erfolgreich aktualisiert");
-                            })
-                            .catch(() => {
-                                errorHandling("Fehler beim Aktualisieren des Kurses")
-                            })
-                            .finally(() => setLoading(false));
-                    });
+                        .catch(() => <ErrorHandling message={"Fehler beim Aktualisieren des Kurses"}/>)
+                        .finally(() => setLoadingCourses(false));
+                }
             }
         }).then()
     }
 
     function deleteCourse(id: string) {
-        setLoading(true);
+        setLoadingCourses(true);
         Swal.fire({
             title: 'Kurs wird gelöscht...',
             didOpen: () => {
                 Swal.showLoading();
-                fetchCsrfToken()
-                    .then(r => {
-                        axios.delete(BASE_URL_COURSES + '/' + id, {
-                            headers: {
-                                'X-CSRF-Token': r.token,
-                            }
+                if (!loadingCsrfToken) {
+                    axios.delete(BASE_URL_COURSES + '/' + id, {
+                        headers: {
+                            'X-CSRF-Token': csrfToken,
+                        }
+                    })
+                        .then(() => {
+                            Swal.close();
+                            fetchCourses();
+                            toast.success("Kurs erfolgreich gelöscht");
                         })
-                            .then(() => {
-                                Swal.close();
-                                fetchCourses();
-                                toast.success("Kurs erfolgreich gelöscht");
-                            })
-                            .catch(() => {
-                                errorHandling("Fehler beim Löschen des Kurses")
-                            })
-                            .finally(() => setLoading(false));
-                    });
+                        .catch(() => <ErrorHandling message={"Fehler beim Löschen des Kurses"}/>)
+                        .finally(() => setLoadingCourses(false));
+                }
             }
         }).then();
     }
 
-    return {courses, loading, addCourse, deleteCourse, updateCourse};
+    return {courses, loading: loadingCourses, addCourse, deleteCourse, updateCourse};
 }
