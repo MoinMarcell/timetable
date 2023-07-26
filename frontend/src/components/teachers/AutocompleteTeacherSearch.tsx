@@ -46,7 +46,7 @@ export default function AutocompleteTeacherSearch(props: AutocompleteTeacherSear
         if (!open) {
             setOptions([]);
         }
-    }, [open]);
+    }, []);
 
     return (
         <Autocomplete
