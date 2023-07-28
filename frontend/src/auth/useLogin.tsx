@@ -17,61 +17,70 @@ export default function UseLogin() {
         username !== "anonymous";
 
     function login(username: string, password: string) {
-        axios.get("/api/v1/auth/csrf")
-            .then(r => {
-                axios.post("/api/v1/auth/login", {}, {
-                    auth: {
-                        username: username,
-                        password: password,
-                    },
-                    headers: {
-                        "X-CSRF-Token": r.data.token,
-                    }
-                })
+        Swal.fire({
+            title: "Anmeldung wird durchgeführt...",
+            didOpen: () => {
+                Swal.showLoading();
+                axios.get("/api/v1/auth/csrf")
                     .then(r => {
-                        setUsername(r.data);
-                        toast.success("Willkommen zurück, " + r.data + "!");
-                        navigate("/");
+                        axios.post("/api/v1/auth/login", {}, {
+                            auth: {
+                                username: username,
+                                password: password,
+                            },
+                            headers: {
+                                "X-CSRF-Token": r.data.token,
+                            }
+                        })
+                            .then(r => {
+                                setUsername(r.data);
+                                Swal.close();
+                                toast.success("Willkommen zurück, " + r.data + "!");
+                                navigate("/");
+                            })
+                            .catch(() => {
+                                Swal.close();
+                                toast.error("Hoppla, da ist etwas schiefgelaufen");
+                            });
                     })
                     .catch(() => {
-                        Swal.fire({
-                            title: "Hoppla, da ist etwas schiefgelaufen",
-                            text: "Bitte überprüfe deine Eingaben",
-                            icon: "error",
-                            timer: 3000,
-                            timerProgressBar: true,
-                            showConfirmButton: false,
-                            willClose() {
-                            },
-                        }).then()
-                    });
-            })
-            .catch(() => {
-                toast.error("Hoppla, da ist etwas schiefgelaufen");
-            })
-            .finally(() => setLoginLoading(false));
+                        Swal.close();
+                        toast.error("Hoppla, da ist etwas schiefgelaufen");
+                    })
+                    .finally(() => setLoginLoading(false));
+            }
+        }).then();
     }
 
     function logout() {
-        axios.get("/api/v1/auth/csrf")
-            .then(r => {
-                axios.post("/api/v1/auth/logout", {}, {
-                    headers: {
-                        "X-CSRF-Token": r.data.token,
-                    }
-                })
-                    .then(() => {
-                        setUsername("anonymous");
-                        toast.success("Du wurdest abgemeldet");
+        Swal.fire({
+            title: "Abmeldung wird durchgeführt...",
+            didOpen: () => {
+                Swal.showLoading();
+                axios.get("/api/v1/auth/csrf")
+                    .then(r => {
+                        axios.post("/api/v1/auth/logout", {}, {
+                            headers: {
+                                "X-CSRF-Token": r.data.token,
+                            }
+                        })
+                            .then(() => {
+                                setUsername("anonymous");
+                                Swal.close();
+                                toast.success("Du wurdest abgemeldet");
+                            })
+                            .catch(() => {
+                                Swal.close();
+                                toast.error("Hoppla, da ist etwas schiefgelaufen");
+                            });
                     })
                     .catch(() => {
+                        Swal.close();
                         toast.error("Hoppla, da ist etwas schiefgelaufen");
-                    });
-            })
-            .catch(() => {
-                toast.error("Hoppla, da ist etwas schiefgelaufen");
-            })
-            .finally(() => setLoginLoading(false));
+                    })
+                    .finally(() => setLoginLoading(false));
+            }
+        }).then();
     }
 
     useEffect(() => {
