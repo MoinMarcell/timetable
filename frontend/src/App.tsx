@@ -8,6 +8,14 @@ import LoginPage from "./auth/LoginPage.tsx";
 import LoadSpinner from "./components/loadSpinner/LoadSpinner.tsx";
 import CourseApp from "./components/courses/CourseApp.tsx";
 import ModuleApp from "./components/modules/ModuleApp.tsx";
+import {createTheme, ThemeProvider} from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+
+const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+    },
+});
 
 export default function App() {
 
@@ -16,35 +24,38 @@ export default function App() {
     if (loginLoading) return (<LoadSpinner/>);
 
     return (
-        <Box sx={{
-            width: "100%",
-            margin: 0,
-        }}>
-            {isAuthenticated && <TopBar isAuthenticated={isAuthenticated} logout={logout}/>}
-            <Routes>
-                <Route path={"/login"} element={<LoginPage loading={loginLoading} login={login}/>}/>
-                <Route element={<ProtectedRoutes isAuthenticated={isAuthenticated}/>}>
-                    <Route path={"/"} element={<p>Home</p>}/>
-                    <Route
-                        path={"/teachers"}
-                        element={
-                            <TeacherApp/>
-                        }
-                    />
-                    <Route
-                        path={"/courses"}
-                        element={
-                            <CourseApp/>
-                        }
-                    />
-                    <Route
-                        path={"/modules"}
-                        element={
-                            <ModuleApp/>
-                        }
-                    />
-                </Route>
-            </Routes>
-        </Box>
+        <ThemeProvider theme={darkTheme}>
+            <CssBaseline/>
+            <Box sx={{
+                width: "100%",
+                margin: 0,
+            }}>
+                {isAuthenticated && <TopBar isAuthenticated={isAuthenticated} logout={logout}/>}
+                <Routes>
+                    <Route path={"/login"} element={<LoginPage loading={loginLoading} login={login}/>}/>
+                    <Route element={<ProtectedRoutes isAuthenticated={isAuthenticated}/>}>
+                        <Route path={"/"} element={<p>Home</p>}/>
+                        <Route
+                            path={"/teachers"}
+                            element={
+                                <TeacherApp/>
+                            }
+                        />
+                        <Route
+                            path={"/courses"}
+                            element={
+                                <CourseApp/>
+                            }
+                        />
+                        <Route
+                            path={"/modules"}
+                            element={
+                                <ModuleApp/>
+                            }
+                        />
+                    </Route>
+                </Routes>
+            </Box>
+        </ThemeProvider>
     )
 }
